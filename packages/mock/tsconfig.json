@@ -1,10 +1,29 @@
 {
-  "extends": "@rr-utils/config/tsconfig.json",
   "compilerOptions": {
-    "outDir": "node",
-    "strict": false,
-    "lib": ["ESNext", "DOM"]
+    "lib": ["ESNext", "DOM"],
+    "outDir": "dist",
+    "target": "ESNext",
+    "alwaysStrict": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": false,
+    "importHelpers": false,
+    "jsx": "preserve",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "pretty": true,
+    "resolveJsonModule": true,
+    "removeComments": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "useUnknownInCatchVariables": true
   },
-  "exclude": ["**/node_modules/**", "**/analyze/**/*", "**/node/**/*"],
-  "include": ["src/**/*"]
+  "exclude": ["**/node_modules/**"],
+  "include": ["*.ts", "src/*"]
 }
