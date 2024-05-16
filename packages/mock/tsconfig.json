@@ -1,0 +1,10 @@
+{
+  "extends": "@rr-utils/config/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "node",
+    "strict": false,
+    "lib": ["ESNext", "DOM"]
+  },
+  "exclude": ["**/node_modules/**", "**/analyze/**/*", "**/node/**/*"],
+  "include": ["src/**/*"]
+}

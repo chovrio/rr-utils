@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/chovrio/rr-utils#readme",
   "devDependencies": {
+    "@rr-utils/config": "workspace:*",
     "@commitlint/config-conventional": "^19.2.2",
     "@eslint/js": "^9.2.0",
     "commitizen": "^4.3.0",

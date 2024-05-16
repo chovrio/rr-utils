@@ -6,6 +6,7 @@ importers:
     specifiers:
       '@commitlint/config-conventional': ^19.2.2
       '@eslint/js': ^9.2.0
+      '@rr-utils/config': workspace:*
       commitizen: ^4.3.0
       commitlint: ^19.3.0
       cz-conventional-changelog: ^3.3.0
@@ -23,6 +24,7 @@ importers:
     devDependencies:
       '@commitlint/config-conventional': 19.2.2
       '@eslint/js': 9.2.0
+      '@rr-utils/config': link:packages/config
       commitizen: 4.3.0_typescript@5.4.5
       commitlint: 19.3.0_typescript@5.4.5
       cz-conventional-changelog: 3.3.0_typescript@5.4.5
@@ -45,6 +47,12 @@ importers:
     dependencies:
       lightningcss: 1.24.1
       prettier: 3.2.5
+
+  packages/mock:
+    specifiers: {}
+
+  packages/monitor:
+    specifiers: {}
 
 packages:
 
