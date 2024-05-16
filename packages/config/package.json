@@ -1,0 +1,21 @@
+{
+  "name": "@rr-utils/config",
+  "version": "1.0.0",
+  "description": "",
+  "type": "commonjs",
+  "exports": {
+    "./tsconfig": "./src/typescript/tsconfig.json",
+    "./prettier": "./dist/prettier/index.cjs",
+    "./stylelint": "./dist/stylelint/index.cjs"
+  },
+  "scripts": {
+    "build": "tsc -p ./src/typescript/tsconfig.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lightningcss": "^1.24.1",
+    "prettier": "^3.2.5"
+  }
+}
