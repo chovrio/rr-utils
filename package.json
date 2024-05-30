@@ -12,7 +12,7 @@
     "url": "git+https://github.com/chovrio/rr-utils.git"
   },
   "author": "chovrio",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/chovrio/rr-utils/issues"
   },

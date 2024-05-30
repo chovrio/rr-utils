@@ -46,6 +46,15 @@ importers:
       lightningcss: 1.24.1
       prettier: 3.2.5
 
+  packages/mock:
+    specifiers: {}
+
+  packages/monitor:
+    specifiers:
+      '@rr-utils/config': workspace:*
+    devDependencies:
+      '@rr-utils/config': link:../config
+
 packages:
 
   /@babel/code-frame/7.24.2:
