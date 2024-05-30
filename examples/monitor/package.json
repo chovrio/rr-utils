@@ -1,5 +1,5 @@
 {
-  "name": "mock",
+  "name": "monitor",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,8 +8,8 @@
   },
   "keywords": [],
   "author": "",
-  "license": "MIT",
-  "dependencies": {
+  "license": "ISC",
+  "devDependencies": {
     "@rr-utils/monitor": "workspace: *"
   }
 }

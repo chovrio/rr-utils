@@ -1,9 +1,10 @@
 {
-  "name": "monitor",
+  "name": "@rr-utils/monitor",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/types/index.d.ts",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
