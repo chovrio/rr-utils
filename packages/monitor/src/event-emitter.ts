@@ -1,6 +1,6 @@
 export type EmitterFunction = (...args: any[]) => void;
 
-export class EventEmitter {
+class EventEmitter {
   private events: Record<string, EmitterFunction[]>;
 
   constructor() {
@@ -15,6 +15,7 @@ export class EventEmitter {
     this.events[event].push(listener);
   }
 
+  // 触发事件
   emit(event: string, ...args: any[]): any[] {
     if (this.events[event]) {
       return this.events[event].map(listener => listener(...args));

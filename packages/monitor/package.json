@@ -6,7 +6,6 @@
   "module": "./dist/index.mjs",
   "types": "./dist/types/index.d.ts",
   "scripts": {
-    "dev": "vite",
     "build": "vite build",
     "test": "vitest run"
   },
