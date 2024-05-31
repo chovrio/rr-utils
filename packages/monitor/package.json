@@ -1,12 +1,18 @@
 {
-  "name": "monitor",
+  "name": "@rr-utils/monitor",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/types/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "vite build",
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "MIT",
+  "devDependencies": {
+    "@rr-utils/config": "workspace:*"
+  }
 }

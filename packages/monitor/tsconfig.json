@@ -1,0 +1,4 @@
+{
+  "extends": "@rr-utils/config/tsconfig",
+  "include": ["src/**/*.ts"]
+}

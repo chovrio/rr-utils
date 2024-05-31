@@ -1,15 +1,15 @@
 {
-  "name": "mock",
+  "name": "monitor",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite"
   },
   "keywords": [],
   "author": "",
-  "license": "MIT",
-  "dependencies": {
+  "license": "ISC",
+  "devDependencies": {
     "@rr-utils/monitor": "workspace: *"
   }
 }
