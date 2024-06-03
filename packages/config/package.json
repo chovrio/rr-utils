@@ -4,7 +4,7 @@
   "description": "",
   "type": "commonjs",
   "exports": {
-    "./tsconfig": "./src/typescript/tsconfig.json",
+    "./tsconfig": "./tsconfig.json",
     "./prettier": "./dist/prettier/index.cjs",
     "./stylelint": "./dist/stylelint/index.cjs"
   },
