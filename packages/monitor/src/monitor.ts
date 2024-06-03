@@ -21,8 +21,11 @@ export class Monitor {
     this.options = {
       internal: options.internal || defaultMonitorOptions.internal,
     };
-
     this.initLoadListener();
+
+    // TODO: delete
+    this.options;
+    this.onLoadListener;
   }
 
   /**
@@ -70,6 +73,7 @@ export class Monitor {
    */
   private initLoadListener() {
     const loadListener = () => {
+      this.initBasic();
       this.initPerformance();
     };
 
@@ -78,8 +82,9 @@ export class Monitor {
     this.onLoadListener = loadListener;
   }
 
-  private initBasic() {
-    const UniqueId = generateUniqueId();
+  private async initBasic() {
+    const UniqueId = await generateUniqueId();
+    console.log('设备唯一标识', UniqueId);
   }
 
   /**

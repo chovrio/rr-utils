@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './config/router.tsx';
-import { Monitor } from '@rr-utils/monitor';
+import Monitor from '@rr-utils/monitor';
 
 Monitor.init({
   internal: 5000,
