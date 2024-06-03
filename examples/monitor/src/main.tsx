@@ -5,9 +5,12 @@ import { RouterProvider } from 'react-router-dom';
 import { router } from './config/router.tsx';
 import Monitor from '@rr-utils/monitor';
 
-Monitor.init({
+const monitor = Monitor.init({
   internal: 5000,
+  consumer: () => {},
 });
+
+(window as any).monitor = monitor;
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
