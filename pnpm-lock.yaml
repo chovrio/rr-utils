@@ -93,10 +93,12 @@ importers:
     specifiers:
       '@rr-utils/config': workspace:*
       '@types/node': ^20.14.0
+      page-lifecycle: ^0.1.2
       typescript: ^5.4.5
     devDependencies:
       '@rr-utils/config': link:../config
       '@types/node': 20.14.0
+      page-lifecycle: 0.1.2
       typescript: 5.4.5
 
 packages:
@@ -3294,6 +3296,10 @@ packages:
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     dependencies:
       p-limit: 4.0.0
+    dev: true
+
+  /page-lifecycle/0.1.2:
+    resolution: {integrity: sha512-+3uccYgL0CXG0KSXRxZi4uc2E6mqFWV5HqiJJgcnaJCiS0LqiuJ4vB420N21NFuLvuvLB4Jr5drgQ2NXAXF9Iw==}
     dev: true
 
   /parent-module/1.0.1:

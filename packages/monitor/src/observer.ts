@@ -1,5 +1,5 @@
 import { ElementInfo, ObserverElemOptions } from './types';
-import { debounce, generateUUID, isElement, safeJsonParse } from './utils';
+import { debounce, generateUUID, isElement } from './utils';
 
 export function ObserverElem(
   elem: Element,
@@ -32,7 +32,7 @@ export function ObserverDOM(callback: (elementInfo: ElementInfo, isNew: boolean)
       if (!mutations.length) return;
       const nodes = Array.from(document.querySelectorAll('[data-monitor-name]'));
       nodes.map(node => {
-        if (node.hasAttribute('data-monitor-id')) {
+        if (node.hasAttribute('data-monitor-id') && node.getAttribute('data-monitor-id')) {
           const key = node.getAttribute('data-monitor-id') as string;
           const name = node.getAttribute('data-monitor-name') as string;
           callback?.(
@@ -46,7 +46,8 @@ export function ObserverDOM(callback: (elementInfo: ElementInfo, isNew: boolean)
           return;
         }
         const uuid = generateUUID();
-        const params = safeJsonParse(node.getAttribute('data-monitor-name') || '');
+        const name = node.getAttribute('data-monitor-name') || '';
+
         node.setAttribute('data-monitor-id', uuid);
         const realNode = node?.tagName?.toLowerCase() === 'monitor' ? node.children?.[0] : node;
 
@@ -55,7 +56,7 @@ export function ObserverDOM(callback: (elementInfo: ElementInfo, isNew: boolean)
             {
               node: realNode,
               key: uuid,
-              ...params,
+              name,
             },
             true,
           );

@@ -14,8 +14,9 @@ import EventEmitter, { EmitterFunction } from './event-emitter';
 import { Logger } from './logger';
 import { Page } from './page';
 import { Router } from './router';
-import { MonitorData, MonitorOptions, UrlChangeEvent } from './types';
+import { MonitorData, MonitorOptions, UrlChangeEvent, WindowTimer } from './types';
 import {
+  DebouncedFunction,
   debounce,
   generateUniqueId,
   getPageUniqKey,
@@ -42,11 +43,14 @@ export class Monitor {
   private uniqueId!: string;
   private lifecycle!: Lifecycle;
   private options: MonitorOptions;
-  private inactiveTimerHandle?: number;
+
   private consumer!: (data: any) => void;
   private onLoadListener!: EmitterFunction;
+  private inactiveTimerHandle?: WindowTimer;
   private listeners: Record<string, EmitterFunction>;
   private lifecycleHandler!: (event: StateChangeEvent) => void;
+  private monitorActivityHandler!: DebouncedFunction<(e: any) => void>;
+
   constructor(options: MonitorOptions) {
     this.ee = new EventEmitter();
     this.logger = new Logger();
@@ -128,6 +132,7 @@ export class Monitor {
       this.removeEventListener(event);
     });
     this.removeAllListeners();
+    this.removeMonitorActivityEvents();
   }
 
   /**
@@ -326,16 +331,37 @@ export class Monitor {
    * 监控用户活跃事件
    */
   private monitorActivityEvents() {
+    const activeHandler = debounce(e => {
+      // 如果活跃事件被触发，则清除当前的不活跃定时器并开启一个新的不活跃定时
+      window.clearTimeout(this.inactiveTimerHandle);
+      this.startInactiveTimer();
+      this.curPage?.onActive();
+
+      // 自身是否存在
+      const single = e.target.hasAttribute('data-monitor-name') as HTMLElement;
+      // 外层是否存在
+      const outerElem = e.target.closest('[data-monitor-name]') as HTMLElement;
+      if (single) {
+        this.curPage?.setCurMonitorElem(e.target.getAttribute('data-monitor-id')!);
+      } else if (outerElem) {
+        this.curPage?.setCurMonitorElem(outerElem.getAttribute('data-monitor-id')!);
+      } else {
+        this.curPage?.resetCurMonitorElem();
+      }
+    }, DEBOUNCE_TIMEOUT);
     Object.values(ActivityEvent).forEach(value => {
-      window.addEventListener(
-        value,
-        debounce(() => {
-          // 如果活跃事件被触发，则清除当前的不活跃定时器并开启一个新的不活跃定时
-          window.clearTimeout(this.inactiveTimerHandle);
-          this.startInactiveTimer();
-          this.curPage?.onActive();
-        }, DEBOUNCE_TIMEOUT),
-      );
+      window.addEventListener(value, activeHandler);
+    });
+    this.monitorActivityHandler = activeHandler;
+  }
+
+  /**
+   * 解绑用户活跃事件
+   */
+
+  private removeMonitorActivityEvents() {
+    Object.values(ActivityEvent).forEach(value => {
+      window.removeEventListener(value, this.monitorActivityHandler);
     });
   }
 

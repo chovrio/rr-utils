@@ -16,7 +16,7 @@ export const router = createBrowserRouter([
   {
     path: 'about',
     element: (
-      <div>
+      <div data-monitor-name="about">
         <h1>About</h1>
         <Link to="/main">to main</Link>
       </div>
@@ -25,7 +25,7 @@ export const router = createBrowserRouter([
   {
     path: 'main',
     element: (
-      <div>
+      <div data-monitor-name="main">
         <h1>main</h1>
         <Link to="/about">to about</Link>
       </div>

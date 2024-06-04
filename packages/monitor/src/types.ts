@@ -56,6 +56,7 @@ export interface ObserverElemOptions {
 
 export type ElementInfo = {
   key: string;
+  name: string;
   node: Element;
   observer?: MonitorElement;
   [key: string]: any;
@@ -63,6 +64,7 @@ export type ElementInfo = {
 
 export type MonitorElementOptions = {
   key: string;
+  name: string;
   node: Element;
   config: MonitorElemConfig;
   [key: string]: any;

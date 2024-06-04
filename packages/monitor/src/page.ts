@@ -1,4 +1,5 @@
 import MonitorElement from './element';
+import { Logger } from './logger';
 import { ObserverDOM } from './observer';
 import { ElementInfo, PageOptions, QueryObj, UrlObj } from './types';
 import { parseQueryObject } from './utils';
@@ -19,9 +20,11 @@ export class Page {
   private activeDuration!: number;
   private visibleDuration!: number;
 
+  private logger: Logger;
   private options: PageOptions;
   private observer!: MutationObserver;
   private monitorElements!: ElementInfo[];
+  private curMonitorElem!: ElementInfo | null;
 
   constructor(options: PageOptions) {
     const { url, path, prevUrl } = options || {};
@@ -29,6 +32,7 @@ export class Page {
     this.path = path;
     this.prevUrl = prevUrl;
     this.options = options;
+    this.logger = new Logger();
     this.initPageStats();
   }
 
@@ -44,6 +48,7 @@ export class Page {
     this.visibleDuration = 0;
 
     this.monitorElements = [];
+    this.curMonitorElem = null;
     if (this.options.shouldMonitorElem) {
       this.observer = ObserverDOM(this.checkElement.bind(this));
     }
@@ -77,6 +82,29 @@ export class Page {
       const currentNode = this.monitorElements.find(item => item.key === elementInfo.key);
       currentNode?.observer?.checkStatus(true);
     }
+  }
+  /**
+   * 通过 key 设置当前活跃的模块
+   * @param key element 的唯一标识
+   * @returns
+   */
+  public setCurMonitorElem(key: string) {
+    if (key === this.curMonitorElem?.key) return;
+    const elem = this.monitorElements.find(elem => key === elem.key);
+    if (!elem) {
+      this.curMonitorElem = null;
+      return;
+    }
+    elem?.observer?.onActive();
+    this?.curMonitorElem?.observer?.onInActive();
+    this.logger.debug('focus path: 之前活跃的模块', this?.curMonitorElem?.name);
+    this.logger.debug('focus path: 现在活跃的模块', elem?.name);
+    this.curMonitorElem = elem;
+  }
+
+  public resetCurMonitorElem() {
+    this.curMonitorElem?.observer?.onInActive();
+    this.curMonitorElem = null;
   }
 
   /**
@@ -164,6 +192,9 @@ export class Page {
       enterTime: elem?.enterTime,
       leaveTime: elem?.leaveTime,
       visibleDuration: elem?.visibleDuration,
+      enterActiveTime: elem?.enterActiveTime,
+      leaveActiveTime: elem?.leaveActiveTime,
+      activeDuration: elem?.activeDuration,
       event: elem?.event,
       params: elem?.params,
     }));

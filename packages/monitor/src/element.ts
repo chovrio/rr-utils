@@ -27,29 +27,48 @@ export type MARK_STATE =
 
 class MonitorElement {
   private readonly key: string;
+  private readonly name: string;
   private readonly node: Element;
   private readonly config: MonitorElemConfig;
   private observer?: IntersectionObserver;
+
+  private isActive: boolean;
   private isVisible: boolean;
+
   private enterTime!: number;
   private leaveTime!: number;
   private lastVisibleTime!: number;
   private lastInVisibleTime!: number;
   private visibleDuration: number;
+
+  private enterActiveTime!: number;
+  private leaveActiveTime!: number;
+  private lastActiveTime!: number;
+  private lastInActiveTime!: number;
+  private activeDuration: number;
+
   private ratio: number;
+  private activeTimer?: WindowTimer;
   private visibleTimer?: WindowTimer;
+
   constructor(options: MonitorElementOptions) {
-    const { key, node, config } = options || {};
+    const { key, node, config, name } = options || {};
     this.key = key;
     this.node = node;
+    this.name = name;
     this.config = {
       visiblePercent: config.visiblePercent || DEFAULT_OPTIONS.visiblePercent,
       hiddenPercent: config?.hiddenPercent || DEFAULT_OPTIONS.hiddenPercent,
       duration: config?.duration || DEFAULT_OPTIONS.duration,
       bindVisibilityWithActivity: config?.bindVisibilityWithActivity,
     };
+
+    this.isActive = false;
     this.isVisible = false;
+
+    this.activeDuration = 0;
     this.visibleDuration = 0;
+
     this.ratio = 0;
     this.start();
   }
@@ -99,11 +118,36 @@ class MonitorElement {
         this.leaveTime = time;
         break;
       }
+      // 活跃
+      case STATE_ACTIVE: {
+        if (this.isActive) return;
+        this.isActive = true;
+        this.lastActiveTime = time;
+        if (!this.enterActiveTime) {
+          this.enterActiveTime = time;
+        }
+        break;
+      }
+      // 不活跃
+      case STATE_INACTIVE: {
+        if (!this.isActive) return;
+        this.isActive = false;
+        this.lastInActiveTime = time;
+        this.activeDuration += this.lastInActiveTime - this.lastActiveTime;
+        this.leaveActiveTime = time;
+        break;
+      }
+      // 离开
       case STATE_EXIT: {
         this.leaveTime = time;
+        this.leaveActiveTime = time;
         if (this.isVisible) {
           this.isVisible = false;
           this.visibleDuration += time - this.lastVisibleTime;
+        }
+        if (this.isActive) {
+          this.isActive = false;
+          this.activeDuration += time - this.lastActiveTime;
         }
       }
     }
@@ -139,7 +183,7 @@ class MonitorElement {
   }
 
   public onVisible(lazy: boolean) {
-    this.clearLazyTimer();
+    this.clearLazyVisibleTimer();
     if (this.isVisible) {
       return this.report;
     }
@@ -152,7 +196,8 @@ class MonitorElement {
   }
 
   public onInvisible(lazy: boolean) {
-    this.clearLazyTimer();
+    this.clearLazyVisibleTimer();
+    console.log(this.name, this.isVisible);
     if (!this.isVisible) {
       return this.report;
     }
@@ -164,16 +209,46 @@ class MonitorElement {
     return this.report;
   }
 
+  public onActive() {
+    this.clearLazyActiveTimer();
+    if (this.isActive) {
+      return this.report;
+    }
+
+    this.startActiveTimer(STATE_ACTIVE, this.config.duration!);
+  }
+
+  public onInActive() {
+    console.log(this.name, this.isActive);
+    this.clearLazyActiveTimer();
+    if (!this.isActive) {
+      return this.report;
+    }
+    this.startActiveTimer(STATE_INACTIVE, this.config.duration!);
+  }
+
   private startVisibleTimer(state: MARK_STATE, time: number) {
-    this.clearLazyTimer();
+    this.clearLazyVisibleTimer();
     const now = Date.now();
     this.visibleTimer = window.setTimeout(() => {
       this.mark(state, now);
     }, time);
   }
 
-  private clearLazyTimer() {
+  private startActiveTimer(state: MARK_STATE, time: number) {
+    this.clearLazyActiveTimer();
+    const now = Date.now();
+    this.activeTimer = window.setTimeout(() => {
+      this.mark(state, now);
+    }, time);
+  }
+
+  private clearLazyVisibleTimer() {
     window.clearTimeout(this.visibleTimer);
+  }
+
+  private clearLazyActiveTimer() {
+    window.clearTimeout(this.activeTimer);
   }
 
   get report() {
@@ -181,6 +256,10 @@ class MonitorElement {
       enterTime: this.enterTime,
       leaveTime: this.leaveTime,
       visibleDuration: this.visibleDuration,
+
+      enterActiveTime: this.enterActiveTime,
+      leaveActiveTime: this.leaveActiveTime,
+      activeDuration: this.activeDuration,
     };
   }
 }
