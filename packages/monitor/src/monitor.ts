@@ -1,35 +1,69 @@
-import { ActivityEvent, CustomEvent, DEBOUNCE_TIMEOUT, Events } from './const';
+import lifecycleInstance, { Lifecycle, StateChangeEvent } from 'page-lifecycle';
+import {
+  ActivityEvent,
+  CustomEvent,
+  DEBOUNCE_TIMEOUT,
+  DEFAULT_INTERNAL,
+  Events,
+  INACTIVE_TIMEOUT,
+  LIFECYCLE_EVENT,
+  PAGE_STATS_CACHE_KEY,
+  TriggerState,
+} from './const';
 import EventEmitter, { EmitterFunction } from './event-emitter';
 import { Logger } from './logger';
-import { MonitorData, MonitorOptions, Timeout } from './types';
-import { debounce, generateUniqueId, isContainer, onLoad } from './utils';
+import { Page } from './page';
+import { Router } from './router';
+import { MonitorData, MonitorOptions, UrlChangeEvent } from './types';
+import {
+  debounce,
+  generateUniqueId,
+  getPageUniqKey,
+  isContainer,
+  isLocalStorageSupported,
+  onLoad,
+  parseQueryObject,
+  safeJsonParse,
+} from './utils';
 
 const defaultMonitorOptions: MonitorOptions = {
-  internal: 5000,
   consumer: console.log,
-  inactiveTimeout: 30000,
+  shouldMonitorElem: false,
+  internal: DEFAULT_INTERNAL,
+  triggerOn: TriggerState.EXIT,
+  inactiveTimeout: INACTIVE_TIMEOUT,
 };
 
 export class Monitor {
-  private uniqueId!: string;
-  private ee: EventEmitter;
+  private curPage?: Page;
+  private router: Router;
   private logger: Logger;
-  private consumer!: (data: any) => void;
+  private ee: EventEmitter;
+  private uniqueId!: string;
+  private lifecycle!: Lifecycle;
   private options: MonitorOptions;
-  private inactiveTimerHandler!: Timeout;
+  private inactiveTimerHandle?: number;
+  private consumer!: (data: any) => void;
   private onLoadListener!: EmitterFunction;
   private listeners: Record<string, EmitterFunction>;
+  private lifecycleHandler!: (event: StateChangeEvent) => void;
   constructor(options: MonitorOptions) {
     this.ee = new EventEmitter();
     this.logger = new Logger();
+    this.router = new Router();
     this.listeners = {};
+    this.lifecycle = lifecycleInstance;
     this.options = {
       internal: options.internal || defaultMonitorOptions.internal,
       consumer: options.consumer || defaultMonitorOptions.consumer,
       inactiveTimeout: options.inactiveTimeout || defaultMonitorOptions.inactiveTimeout,
+      shouldMonitorElem: options.shouldMonitorElem || defaultMonitorOptions.shouldMonitorElem,
+      triggerOn: options.triggerOn || defaultMonitorOptions.triggerOn,
     };
     this.consumer = this.options.consumer;
     this.initEvents();
+    this.initRouter();
+    this.initLifecycle();
     this.initErrorCatch();
     this.initWhiteScreen();
     this.initLoadListener();
@@ -51,7 +85,7 @@ export class Monitor {
    * @param event 事件名
    * @param listener 回调函数
    */
-  addListener(event: string, listener: EmitterFunction) {
+  public addListener(event: string, listener: EmitterFunction) {
     this.ee.on(event, listener);
     this.listeners[event] = listener;
   }
@@ -60,7 +94,7 @@ export class Monitor {
    * 移除事件监听
    * @param event 事件名
    */
-  removeListener(event: string) {
+  public removeEventListener(event: string) {
     this.ee.off(event, this.listeners[event]);
     delete this.listeners[event];
   }
@@ -70,9 +104,18 @@ export class Monitor {
    * @param event 事件名
    * @param data 参数
    */
-  dispatchEvent(event: string, data: MonitorData) {
+  dispatchEvent(event: string, data?: MonitorData) {
     this.ee.emit(event, data);
     this.logger.debug('dispatchEvent', event, data);
+  }
+
+  /**
+   * 移除所有自定义事件的监听
+   */
+  public removeAllListeners() {
+    Object.keys(this.listeners).forEach((event: string) => {
+      this.removeEventListener(event);
+    });
   }
 
   /**
@@ -82,9 +125,9 @@ export class Monitor {
     this.logger.debug('destroy');
     window.removeEventListener('load', this.onLoadListener);
     Object.values(Events).forEach(event => {
-      this.removeListener(event);
+      this.removeEventListener(event);
     });
-    this.ee.removeAllListeners();
+    this.removeAllListeners();
   }
 
   /**
@@ -97,12 +140,36 @@ export class Monitor {
   }
 
   /**
+   * 初始化 PageLifecycle
+   * @private
+   */
+  private initLifecycle() {
+    this.lifecycleHandler = (event: StateChangeEvent) => {
+      this.logger.debug('页面状态改变: ', event.newState, event.oldState);
+      switch (event.newState) {
+        case 'hidden':
+          this.handleHiddenState();
+          break;
+        case 'terminated':
+          this.handleTerminatedState();
+          break;
+        case 'active':
+        case 'passive':
+          this.handlePageVisibleState();
+          break;
+      }
+    };
+    this.lifecycle.addEventListener(LIFECYCLE_EVENT, this.lifecycleHandler);
+  }
+
+  /**
    * 添加对页面初始化 load 事件的监听
    * @private
    */
   private initLoadListener() {
     const loadListener = () => {
       this.initBasic();
+      this.onPageEnter();
       this.initPerformance();
     };
 
@@ -247,6 +314,15 @@ export class Monitor {
   }
 
   /**
+   * 初始化路由监听
+   */
+  private initRouter() {
+    this.router.onUrlChange(event => {
+      this.handlePageChange(event);
+    });
+  }
+
+  /**
    * 监控用户活跃事件
    */
   private monitorActivityEvents() {
@@ -255,9 +331,9 @@ export class Monitor {
         value,
         debounce(() => {
           // 如果活跃事件被触发，则清除当前的不活跃定时器并开启一个新的不活跃定时
-          window.clearTimeout(this.inactiveTimerHandler);
+          window.clearTimeout(this.inactiveTimerHandle);
           this.startInactiveTimer();
-          // this.curPage?.onActive();
+          this.curPage?.onActive();
         }, DEBOUNCE_TIMEOUT),
       );
     });
@@ -270,10 +346,144 @@ export class Monitor {
   private startInactiveTimer() {
     // 非活跃定时器仅在页面可见时触发
     if (document.visibilityState === 'visible') {
-      this.inactiveTimerHandler = setTimeout(() => {
-        // this.curPage?.onInactive();
+      this.inactiveTimerHandle = window.setTimeout(() => {
+        this.curPage?.onInActive();
         this.dispatchEvent(CustomEvent.INACTIVE, { desc: '用户不活跃' });
       }, this.options.inactiveTimeout);
     }
+  }
+
+  /**
+   * 处理新页面的进入
+   * @param event Router 传递的 UrlChangeEvent
+   * @private
+   */
+  private onPageEnter(event?: UrlChangeEvent) {
+    const { shouldMonitorElem, monitorElemConfig } = this.options;
+    const savedData = isLocalStorageSupported() ? localStorage.getItem(PAGE_STATS_CACHE_KEY) : undefined;
+    if (savedData) this.triggerPageViewEvent(safeJsonParse(savedData));
+
+    this.removePageStatsCache();
+    this.curPage = event
+      ? event.curUrl &&
+        new Page({
+          url: event.curUrl,
+          prevUrl: event.preUrl,
+          path: event.curUrl.path,
+          shouldMonitorElem,
+          monitorElemConfig,
+        })
+      : new Page({
+          path: window.location.pathname,
+          url: {
+            path: window.location.pathname,
+            href: window.location.href,
+            hash: window.location.hash,
+            host: window.location.host,
+            port: window.location.port,
+            query: parseQueryObject(window.location.search),
+            pathWithHash: window.location.pathname + window.location.hash,
+          },
+          shouldMonitorElem,
+          monitorElemConfig,
+        });
+
+    this.curPage?.onEnter();
+    this.startInactiveTimer();
+    this.dispatchEvent(CustomEvent.ENTER, this.curPage?.generatePvEvent(CustomEvent.ENTER));
+    !event && this.dispatchEvent(CustomEvent.LOAD, this.curPage?.generatePvEvent(CustomEvent.LOAD));
+  }
+
+  /**
+   * 处理单页面应用路由变化
+   * @param event Router 传递的 UrlChangeEvent
+   * @private
+   */
+  private handlePageChange(event: UrlChangeEvent) {
+    const uniqKey = getPageUniqKey(this.options.pageUniqKey);
+    if (this.curPage && this.curPage.currUrl?.[uniqKey] === event.curUrl?.[uniqKey]) return;
+
+    // 若存在上一页面，将其置为 terminated 状态，然后触发新页面的 enter 事件
+    if (this.curPage) {
+      this.handleHiddenState();
+      this.handleTerminatedState();
+    }
+    this.onPageEnter(event);
+  }
+
+  /**
+   * 处理页面可见的生命周期 active 和 passive
+   * @private
+   */
+  private handlePageVisibleState() {
+    // 页面可见
+    this.curPage?.onVisible();
+    // 因为页面活跃，所以不用缓存
+    this.removePageStatsCache();
+  }
+
+  /**
+   * 处理页面 hidden 状态
+   */
+  private handleHiddenState() {
+    window.clearTimeout(this.inactiveTimerHandle);
+
+    this.curPage?.onInActive();
+    this.curPage?.onInVisible();
+
+    // hidden 状态可能由于页面被回收或用户清理浏览器进程触发，所以需要将当前页面信息缓存下来，防止丢失
+    this.cachePageStats();
+
+    // hidden 状态意味着页面不再活跃，因此同时触发 inactive 事件
+    this.dispatchEvent(CustomEvent.INACTIVE, this.curPage?.generatePvEvent(CustomEvent.INACTIVE));
+    this.dispatchEvent(CustomEvent.HIDDEN, this.curPage?.generatePvEvent(CustomEvent.HIDDEN));
+
+    if ([TriggerState.HIDDEN, TriggerState.INACTIVE].includes(this.options.triggerOn!)) {
+      this.triggerPageViewEvent();
+    }
+  }
+
+  /**
+   * 处理页面 terminated
+   */
+  private handleTerminatedState() {
+    this.dispatchEvent(CustomEvent.EXIT, this.curPage?.generatePvEvent(CustomEvent.EXIT));
+
+    this.options.triggerOn === TriggerState.EXIT && this.triggerPageViewEvent();
+
+    // EXIT 时清空页面统计数据
+    this.curPage?.onExit();
+
+    delete this.curPage;
+
+    // 如果进入 terminated 状态，说明网页正常退出，无需缓存，因此清除 localStorage
+    this.removePageStatsCache();
+  }
+
+  /**
+   * 触发 pageview 事件
+   * @param event pageview 事件
+   * @private
+   */
+  private triggerPageViewEvent(event?: MonitorData) {
+    this.dispatchEvent(CustomEvent.PAGE_VIEW, event || this.curPage?.generatePvEvent(CustomEvent.PAGE_VIEW));
+    window.clearTimeout(this.inactiveTimerHandle);
+  }
+
+  private cachePageStats() {
+    try {
+      const value = this.curPage?.generatePvEvent(CustomEvent.EXIT);
+      value && isLocalStorageSupported() && localStorage.setItem(PAGE_STATS_CACHE_KEY, JSON.stringify(value));
+    } catch (error) {
+      this.logger.debug('localStorage setItem \n', error);
+    }
+  }
+
+  /**
+   * 移除当前存在 localStorage 中的页面数据缓存
+   * @private
+   */
+  private removePageStatsCache() {
+    isLocalStorageSupported() && localStorage.removeItem(PAGE_STATS_CACHE_KEY);
   }
 }

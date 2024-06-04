@@ -12,7 +12,7 @@ export class Logger {
   }
 
   debug(...res: any) {
-    if (process.env.NODE_ENV === 'development') {
+    if (window.monitor_debug) {
       console.log('[debug]', ...res);
     }
   }

@@ -1,5 +1,5 @@
-import { containerElements } from './const';
-import { Timeout } from './types';
+import { PageUniqKey, containerElements } from './const';
+import { QueryObj } from './types';
 
 /**
  * debounce function from ts-debounce
@@ -23,7 +23,7 @@ export function debounce<F extends Procedure>(
     isImmediate: false,
   },
 ) {
-  let timeoutId: Timeout | undefined;
+  let timeoutId: number | undefined;
   const debouncedFunction = function (this: ThisParameterType<F>, ...args: Parameters<F>) {
     const context = this;
 
@@ -37,10 +37,10 @@ export function debounce<F extends Procedure>(
     const shouldCallNow = options.isImmediate && timeoutId === undefined;
 
     if (timeoutId !== undefined) {
-      clearTimeout(timeoutId);
+      window.clearTimeout(timeoutId);
     }
 
-    timeoutId = setTimeout(doLater, waitMilliseconds);
+    timeoutId = window.setTimeout(doLater, waitMilliseconds);
 
     if (shouldCallNow) {
       func.apply(context, args);
@@ -49,7 +49,7 @@ export function debounce<F extends Procedure>(
 
   debouncedFunction.cancel = function () {
     if (timeoutId !== undefined) {
-      clearTimeout(timeoutId);
+      window.clearTimeout(timeoutId);
     }
   };
 
@@ -133,4 +133,145 @@ export function isContainer(element: Element) {
     return true;
   }
   return false;
+}
+
+/**
+ * 解析 URL query
+ * @param queryStr query 字符串
+ */
+export function parseQueryObject(queryStr: string) {
+  const result: QueryObj = {};
+  queryStr &&
+    queryStr
+      .substring(1)
+      .split('&')
+      .forEach(pairStr => {
+        const pair = pairStr.split('=');
+        pair[0] && (result[decodeURIComponent(pair[0])] = pair[1] ? decodeURIComponent(pair[1]) : '');
+      });
+
+  return result;
+}
+
+/**
+ * 判断是否是 Element 节点
+ * @param value {Node}
+ */
+export function isElement(value: Node) {
+  return (value && value.nodeType === Node.ELEMENT_NODE) || false;
+}
+
+/**
+ * 简单的手动生成 UUID
+ */
+export function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0,
+      v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+/**
+ * 解析字符生成对象
+ * @param str
+ * @returns
+ */
+export function safeJsonParse(str?: string) {
+  try {
+    return JSON.parse(str || '');
+  } catch (e) {
+    return {};
+  }
+}
+
+/**
+ * 获取 DOM 元素的 style 样式表
+ * @param element DOM 元素
+ * @returns
+ */
+export function computedStyle(element: Element) {
+  return window.getComputedStyle(element, null);
+}
+
+export function styleProperty(style: CSSStyleDeclaration, property: string) {
+  return style.getPropertyValue(property);
+}
+
+export function isDisplayed(element: Element, style?: CSSStyleDeclaration): boolean {
+  if (!style) {
+    style = computedStyle(element);
+  }
+
+  const display = styleProperty(style, 'display');
+  if (display === 'none') {
+    return false;
+  }
+
+  const parent = element.parentNode;
+  return parent && isElement(parent) ? isDisplayed(parent as Element) : true;
+}
+
+export function isVisibleByStyling(element: Element | Document) {
+  if (element === window.document) return true;
+
+  if (!element || !element.parentNode) return false;
+
+  const style = computedStyle(element as Element);
+
+  const visibility = styleProperty(style, 'visibility');
+
+  if (visibility === 'hidden' || visibility === 'collapse') return false;
+
+  const opacity = styleProperty(style, 'opacity');
+  if (opacity === '0') return false;
+
+  return isDisplayed(element as Element, style);
+}
+
+/**
+ * 获取事件派发机制
+ * @param key {PageUniqKey}
+ * @returns
+ */
+export function getPageUniqKey(key?: PageUniqKey) {
+  switch (key) {
+    case PageUniqKey.href: {
+      return PageUniqKey.href;
+    }
+    case PageUniqKey.path: {
+      return PageUniqKey.path;
+    }
+    case PageUniqKey.hash: {
+      return 'pathWithHash';
+    }
+    default: {
+      return PageUniqKey.href;
+    }
+  }
+}
+
+/**
+ * 判断当前环境 localStorage 方法是否可用
+ * @returns {boolean}
+ */
+export function isLocalStorageSupported() {
+  let localStorageSupported: any = null;
+
+  if (localStorageSupported !== null) {
+    return localStorageSupported;
+  }
+
+  try {
+    localStorage.setItem('check', 'check');
+    localStorage.getItem('check');
+    localStorage.removeItem('check');
+
+    localStorageSupported = true;
+  } catch (error) {
+    localStorageSupported = false;
+    console.error('[Monitor] localStorage not supported');
+  }
+
+  return localStorageSupported;
 }

@@ -14,6 +14,7 @@
   "devDependencies": {
     "@rr-utils/config": "workspace:*",
     "@types/node": "^20.14.0",
+    "page-lifecycle": "^0.1.2",
     "typescript": "^5.4.5"
   }
 }

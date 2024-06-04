@@ -7,6 +7,13 @@ export enum Events {
   CUSTOM = 'custom',
   WHITE_SCREEN = 'whiteScreen',
 }
+
+export enum TriggerState {
+  EXIT,
+  HIDDEN,
+  INACTIVE,
+}
+
 export const containerElements = ['html', 'body', '#app', '#root'];
 
 export const ActivityEvent = {
@@ -42,3 +49,42 @@ export const CustomEvent = {
   /** 定时器触发 */
   INTERNAL: 'internal',
 };
+
+/**
+ * Router 触发模式
+ */
+export enum TriggeringMethod {
+  HASH = 'hash',
+  BOTH = 'both',
+  HISTORY = 'history',
+}
+
+export enum PageUniqKey {
+  href = 'href',
+  path = 'path',
+  hash = 'hash',
+}
+
+/**
+ * Router 事件
+ */
+export enum RouterEvents {
+  POP_STATE = 'popstate',
+  PUSH_STATE = 'pushState',
+  REPLACE_STATE = 'replaceState',
+}
+
+export const STATE_VISIBLE = 'VISIBLE';
+export const STATE_INVISIBLE = 'INVISIBLE';
+export const STATE_ACTIVE = 'ACTVE';
+export const STATE_INACTIVE = 'INACTIVE';
+export const STATE_EXIT = 'EXIT';
+
+export const DEFAULT_INTERNAL = 5000;
+export const INACTIVE_TIMEOUT = 30000;
+export const LIFECYCLE_EVENT = 'statechange';
+export const PAGE_STATS_CACHE_KEY = '_rr_tracer_page_stats';
+
+export const ELEM_TIMEOUT = 1000;
+export const ELEM_VISIBLE_PER = 0.75;
+export const ELEM_HIDDEN_PER = 0.25;
