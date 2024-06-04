@@ -219,7 +219,6 @@ class MonitorElement {
   }
 
   public onInActive() {
-    console.log(this.name, this.isActive);
     this.clearLazyActiveTimer();
     if (!this.isActive) {
       return this.report;
