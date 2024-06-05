@@ -12,7 +12,15 @@ const config: Config = {
 	singleQuote: true, // 是否用单引号替代双引号
 	tabWidth: 2, // 一个 tab 占用的空格数
 	trailingComma: 'none', // 是否在对象和数组的尾部加逗号，例如: [1, 2, 3,]
-	useTabs: true // 是否使用 tab 来进行缩进
+	useTabs: true, // 是否使用 tab 来进行缩进
+	overrides: [
+		{
+			files: 'package.json',
+			options: {
+				parser: 'json'
+			}
+		}
+	]
 };
 
 module.exports = config;
