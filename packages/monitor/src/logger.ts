@@ -12,7 +12,7 @@ export class Logger {
 	}
 
 	debug(...res: any) {
-		if (window.monitor_debug) {
+		if (window && window.monitor_debug) {
 			console.log('[debug]', ...res);
 		}
 	}

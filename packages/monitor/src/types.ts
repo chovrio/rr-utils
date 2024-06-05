@@ -1,4 +1,4 @@
-import { PageUniqKey, TriggerState, TriggeringMethod } from './const';
+import { Events, PageUniqKey, TriggerState, TriggeringMethod } from './const';
 import MonitorElement from './element';
 import { Logger } from './logger';
 
@@ -15,10 +15,69 @@ export interface MonitorOptions {
 }
 
 export type MonitorData =
-	| {
-			[key: string]: any;
-	  }
-	| any[];
+	| MonitorDataInternal
+	| MonitorDataBasic
+	| MonitorDataCustom
+	| MonitorDataError
+	| MonitorDataPerformance
+	| MonitorDataUnHandledReject
+	| MonitorDataWhiteScreen
+	| PVEvent;
+
+interface MonitorDataAll {
+	type: MonitorDataType;
+	data: any;
+	[key: string]: any;
+}
+export type PVEvent = {
+	type: string;
+	currUrl: UrlObj;
+	prevUrl?: UrlObj;
+	path: string;
+	title: string;
+	query: QueryObj;
+	enterTime: number;
+	leaveTime?: number;
+	activeDuration?: number;
+	visibleDuration?: number;
+	monitorElements: Record<string, any>[];
+};
+
+type MonitorDataType = `${Events}`;
+
+interface MonitorDataInternal extends MonitorDataAll {
+	type: Events.INTERNAL;
+	data: any;
+}
+
+interface MonitorDataBasic extends MonitorDataAll {
+	type: Events.BASIC;
+	data: any;
+}
+
+interface MonitorDataCustom extends MonitorDataAll {
+	type: Events.CUSTOM;
+	data: any;
+}
+
+interface MonitorDataError extends MonitorDataAll {
+	type: Events.ERROR;
+	data: any;
+}
+
+interface MonitorDataPerformance extends MonitorDataAll {
+	type: Events.PERFORMANCE;
+	data: any;
+}
+
+interface MonitorDataUnHandledReject extends MonitorDataAll {
+	type: Events.UN_HANDLED_REJECTION;
+	data: any;
+}
+interface MonitorDataWhiteScreen extends MonitorDataAll {
+	type: Events.WHITE_SCREEN;
+	data: any;
+}
 
 // type MonitorDataType = 'internal' | 'error' | 'basic' | 'performance' | 'custom';
 

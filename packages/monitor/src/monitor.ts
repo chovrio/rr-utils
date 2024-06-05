@@ -109,6 +109,7 @@ export class Monitor {
 	 * @param data 参数
 	 */
 	dispatchEvent(event: string, data?: MonitorData) {
+		if (!this.listeners[event]) return;
 		this.ee.emit(event, data);
 		this.logger.debug('dispatchEvent', event, data);
 	}
@@ -189,7 +190,9 @@ export class Monitor {
 	private async initBasic() {
 		const uniqueId = await generateUniqueId();
 		this.uniqueId = uniqueId;
-		const data = {
+		const data: MonitorData = {
+			type: Events.BASIC,
+			data: [],
 			userId: uniqueId,
 			pagePath: window.location.pathname,
 			timestamp: new Date().toISOString()
@@ -259,7 +262,10 @@ export class Monitor {
 
 				// 只对25%的用户进行上报
 				if (Math.random() > 0.75) {
-					this.dispatchEvent(Events.PERFORMANCE, n);
+					this.dispatchEvent(Events.PERFORMANCE, {
+						type: Events.PERFORMANCE,
+						data: n
+					});
 				}
 			}
 		});
@@ -271,19 +277,25 @@ export class Monitor {
 	 */
 	private initErrorCatch() {
 		window.addEventListener('error', e => {
-			const data = {
-				reason: e.message,
-				error: e.error,
-				timestamp: e.timeStamp
+			const data: MonitorData = {
+				type: Events.ERROR,
+				data: {
+					reason: e.message,
+					error: e.error,
+					timestamp: e.timeStamp
+				}
 			};
 			this.dispatchEvent(Events.ERROR, data);
 		});
 
 		window.addEventListener('unhandledrejection', e => {
-			const data = {
-				reason: e.reason,
-				error: e.type,
-				timestamp: e.timeStamp
+			const data: MonitorData = {
+				type: Events.UN_HANDLED_REJECTION,
+				data: {
+					reason: e.reason,
+					error: e.type,
+					timestamp: e.timeStamp
+				}
 			};
 			this.dispatchEvent(Events.UN_HANDLED_REJECTION, data);
 		});
@@ -307,11 +319,14 @@ export class Monitor {
 			}
 			// 17 个点都是容器节点算作白屏
 			if (emptyPoints === 17) {
-				const data = {
-					userId: this.uniqueId,
-					pagePath: window.location.pathname,
-					timestamp: new Date().toISOString(),
-					error: '白屏'
+				const data: MonitorData = {
+					type: Events.WHITE_SCREEN,
+					data: {
+						userId: this.uniqueId,
+						pagePath: window.location.pathname,
+						timestamp: new Date().toISOString(),
+						error: '白屏'
+					}
 				};
 				this.dispatchEvent(Events.WHITE_SCREEN, data);
 			}
@@ -374,7 +389,10 @@ export class Monitor {
 		if (document.visibilityState === 'visible') {
 			this.inactiveTimerHandle = window.setTimeout(() => {
 				this.curPage?.onInActive();
-				this.dispatchEvent(CustomEvent.INACTIVE, { desc: '用户不活跃' });
+				this.dispatchEvent(CustomEvent.INACTIVE, {
+					type: CustomEvent.INACTIVE,
+					data: { desc: '用户不活跃' }
+				} as MonitorData);
 			}, this.options.inactiveTimeout);
 		}
 	}
