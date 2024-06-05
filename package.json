@@ -16,7 +16,7 @@
 		"commit": "git-cz",
 		"prepare": "husky",
 		"test": "vitest run",
-    "prettier": "prettier --write ."
+		"prettier": "prettier --write ."
 	},
 	"devDependencies": {
 		"@commitlint/config-conventional": "^19.2.2",
