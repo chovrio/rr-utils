@@ -8,15 +8,15 @@ import Monitor from '@rr-utils/monitor';
 window.monitor_debug = true;
 
 const monitor = Monitor.init({
-  internal: 5000,
-  consumer: () => {},
-  shouldMonitorElem: true,
+	internal: 5000,
+	consumer: () => {},
+	shouldMonitorElem: true
 });
 
 window.monitor = monitor;
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>,
+	<React.StrictMode>
+		<RouterProvider router={router} />
+	</React.StrictMode>
 );

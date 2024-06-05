@@ -1,21 +1,25 @@
 {
-  "name": "@rr-utils/config",
-  "version": "1.0.0",
-  "description": "",
-  "type": "commonjs",
-  "exports": {
-    "./tsconfig": "./tsconfig.json",
-    "./prettier": "./dist/prettier/index.cjs",
-    "./stylelint": "./dist/stylelint/index.cjs"
-  },
-  "scripts": {
-    "build": "tsc -p ./src/typescript/tsconfig.json"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "lightningcss": "^1.24.1",
-    "prettier": "^3.2.5"
-  }
+	"name": "@rr-utils/config",
+	"version": "1.0.0",
+	"description": "",
+	"keywords": [],
+	"license": "MIT",
+	"author": "",
+	"type": "commonjs",
+	"exports": {
+		"./tsconfig": "./tsconfig.json",
+		"./prettier": "./dist/prettier/index.js",
+		"./stylelint": "./dist/stylelint/index.js"
+	},
+	"scripts": {
+		"build": "tsc -p ./tsconfig.json"
+	},
+	"dependencies": {
+		"lightningcss": "^1.24.1",
+		"prettier": "^3.2.5"
+	},
+	"devDependencies": {
+		"@types/node": "^20.14.0",
+		"@types/prettier": "^3.0.0"
+	}
 }

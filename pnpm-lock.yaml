@@ -6,6 +6,7 @@ importers:
     specifiers:
       '@commitlint/config-conventional': ^19.2.2
       '@eslint/js': ^9.2.0
+      '@rr-utils/config': 'workspace: *'
       commitizen: ^4.3.0
       commitlint: ^19.3.0
       cz-conventional-changelog: ^3.3.0
@@ -24,6 +25,7 @@ importers:
     devDependencies:
       '@commitlint/config-conventional': 19.2.2
       '@eslint/js': 9.2.0
+      '@rr-utils/config': link:packages/config
       commitizen: 4.3.0_typescript@5.4.5
       commitlint: 19.3.0_typescript@5.4.5
       cz-conventional-changelog: 3.3.0_typescript@5.4.5
@@ -77,11 +79,16 @@ importers:
 
   packages/config:
     specifiers:
+      '@types/node': ^20.14.0
+      '@types/prettier': ^3.0.0
       lightningcss: ^1.24.1
       prettier: ^3.2.5
     dependencies:
       lightningcss: 1.24.1
       prettier: 3.2.5
+    devDependencies:
+      '@types/node': 20.14.0
+      '@types/prettier': 3.0.0
 
   packages/mock:
     specifiers:
@@ -1062,6 +1069,13 @@ packages:
     resolution: {integrity: sha512-5cHBxFGJx6L4s56Bubp4fglrEpmyJypsqI6RgzMfBHWUJQGWAAi8cWcgetEbZXHYXo9C2Fa4EEds/uSyS4cxmA==}
     dependencies:
       undici-types: 5.26.5
+    dev: true
+
+  /@types/prettier/3.0.0:
+    resolution: {integrity: sha512-mFMBfMOz8QxhYVbuINtswBp9VL2b4Y0QqYHwqLz3YbgtfAcat2Dl6Y1o4e22S/OVE6Ebl9m7wWiMT2lSbAs1wA==}
+    deprecated: This is a stub types definition. prettier provides its own type definitions, so you do not need this installed.
+    dependencies:
+      prettier: 3.2.5
     dev: true
 
   /@types/prop-types/15.7.12:
