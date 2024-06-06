@@ -143,6 +143,6 @@ class Mock {
 	}
 }
 
-export { Mock };
+export { Mock, MockOptions };
 
 export default Mock;
