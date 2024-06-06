@@ -6,7 +6,7 @@ interface Result<T> {
 
 interface User {
 	name: string;
-	age: number;
+	age: number | string;
 	address: string;
 }
 
