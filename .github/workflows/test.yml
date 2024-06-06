@@ -1,0 +1,28 @@
+name: Pull Request Test
+
+# 触发条件: 在创建或更新 Pull Request 时触发
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest # 选择一个运行环境，这里使用最新的 Ubuntu
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2 # 操作会签出你的代码
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2 # 动作用于设置 Node.js 环境
+        with:
+          node-version: '16' # 指定 Node.js 版本
+
+      - name: Install pnpm
+        run: npm install -g pnpm@7 # 全局安装 pnpm
+
+      - name: Install dependencies
+        run: pnpm install # 安装项目依赖
+
+      - name: Run tests
+        run: pnpm test # 运行测试命令
