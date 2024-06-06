@@ -7,6 +7,10 @@
 	"author": "",
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
+	"publishConfig": {
+		"access": "public"
+	},
+	"files": ["lib"],
 	"scripts": {
 		"build": "tsc -p ./tsconfig.build.json",
 		"test": "vitest run"
