@@ -2,7 +2,7 @@
 	"extends": "@rr-utils/config/tsconfig",
 	"compilerOptions": {
 		"outDir": "lib",
-		"lib": ["ESNext"]
+		"lib": ["DOM", "ESNext"]
 	},
 	"include": ["src/**/*.ts"]
 }
