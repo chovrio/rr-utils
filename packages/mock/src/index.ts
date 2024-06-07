@@ -151,8 +151,9 @@ class Mock {
 		}
 	}
 
-	private generateReference(type: ts.TypeReferenceNode, option: MockOptions = {}) {
+	private generateReference(type: ts.TypeReferenceNode, option: MockOptions = {}, length = 10) {
 		const name = type.typeName.getText();
+
 		switch (name) {
 			case 'Map': {
 				const map = new Map();
@@ -168,15 +169,20 @@ class Mock {
 					this.execCount(() => {
 						const obj = this.generateByType(type.typeArguments?.[0], { ...option });
 						map.set(obj.value || obj, this.generateByType(type.typeArguments?.[1], { ...option }));
-					}, 10);
+					}, length);
 				}
 
 				return map;
 			}
 			case 'Set': {
 				const set = new Set();
-				this.execCount(() => set.add(this.generateByType(type.typeArguments?.[0], { ...option })), 10);
+				this.execCount(() => set.add(this.generateByType(type.typeArguments?.[0], { ...option })), length);
 				return set;
+			}
+			case 'Array': {
+				const array: any[] = [];
+				this.execCount(() => array.push(this.generateByType(type.typeArguments?.[0], { ...option })), length);
+				return array;
 			}
 		}
 	}
@@ -190,6 +196,9 @@ class Mock {
 			case 'number_float':
 				return this.verify(option.value, this.generateNumber(option));
 			case 'array':
+				if (type.kind === ts.SyntaxKind.TypeReference) {
+					return this.verify(option.value, this.generateReference(type as ts.TypeReferenceNode, {}, option.length));
+				}
 				return this.verify(option.value, this.generateArray(type, option));
 			default:
 				break;

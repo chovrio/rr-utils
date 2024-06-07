@@ -20,7 +20,7 @@ interface Obj {
 	name: string;
 	age: number;
 	address: string;
-	users: User[];
+	users: Array<User>;
 }
 
 type R1 = Result<User>;
