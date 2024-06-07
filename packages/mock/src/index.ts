@@ -185,12 +185,12 @@ class Mock {
 		if (!type) return null;
 		switch (option.type) {
 			case 'string':
-				return this.generateString(option);
+				return this.verify(option.value, this.generateString(option));
 			case 'number':
 			case 'number_float':
-				return this.generateNumber(option);
+				return this.verify(option.value, this.generateNumber(option));
 			case 'array':
-				return this.generateArray(type, option);
+				return this.verify(option.value, this.generateArray(type, option));
 			default:
 				break;
 		}
@@ -224,6 +224,16 @@ class Mock {
 		const array: any[] = [];
 		this.execCount(() => array.push(this.generateByType(arrayNode.elementType, {})), length);
 		return array;
+	}
+
+	private verify(value: any, data: any) {
+		if (typeof value === 'function' && value !== null) {
+			return value(data);
+		} else if (value) {
+			return value;
+		} else {
+			return data;
+		}
 	}
 
 	private execCount(callback: () => void, count: number) {
