@@ -252,6 +252,9 @@ class MonitorElement {
 
 	get report() {
 		return {
+			key: this.key,
+			name: this.name,
+
 			enterTime: this.enterTime,
 			leaveTime: this.leaveTime,
 			visibleDuration: this.visibleDuration,
