@@ -1,3 +1,10 @@
+# Mock
+
+解析 interface 生成对应类型的数据
+
+## 使用
+
+```ts
 import { Mock } from '@rr-utils/mock';
 
 // 示`例 TypeScript 代码
@@ -57,3 +64,26 @@ const data = mock.generate('Obj', {
 });
 
 console.log(data);
+/**
+ * 
+ * 生成数据 
+{
+  name: '8',
+  age: 0.13,
+  address: '摏績闁',
+  users: [
+    {
+      name: 'Xz2l',
+      age: 35677.67,
+      address: '7w',
+      map: [Map],
+      set: [Set]
+    }
+  ]
+}
+ */
+```
+
+目前仅支持对大部分基本类型和引用类型进行 mock，其他类型暂不支持
+
+且暂时仅支持对浅层字段进行自定义操作

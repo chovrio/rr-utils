@@ -1,14 +1,52 @@
 import * as ts from 'typescript';
-import { generate_string } from './string';
-import { randomNum } from './number';
-import { MAX_REFERENCE } from './const';
+import { generate_cn, generate_en, generate_string } from './string';
+import { randomFloatNum, randomNum } from './number';
+import {
+	BASIC_FIXED,
+	BASIC_MAX_NUMBER,
+	BASIC_MAX_STRING,
+	BASIC_MIN_NUMBER,
+	BASIC_MIN_STRING,
+	MAX_REFERENCE
+} from './const';
 
 type Node = ts.InterfaceDeclaration | ts.TypeAliasDeclaration | ts.EnumDeclaration | ts.ModuleDeclaration;
+
+type MockType = 'string' | 'number' | 'number_float' | 'array' | 'object';
+
+interface MockBasicOptions<T = any> {
+	type: MockType;
+	value?: T | ((origin: T) => any);
+}
+
+interface MockStringOptions extends MockBasicOptions {
+	type: 'string';
+	min?: number;
+	max?: number;
+	language?: 'zh' | 'en' | 'zh_en';
+	value?: any | ((origin: string) => any);
+}
+
+interface MockNumberOptions extends MockBasicOptions {
+	type: 'number' | 'number_float';
+	min?: number;
+	max?: number;
+	fixed?: number;
+	value?: any | ((origin: number) => any);
+}
+
+interface MockArrayOptions extends MockBasicOptions {
+	type: 'array';
+	value?: any[] | ((origin: any[]) => any);
+	length: number;
+}
+
+type CustomMockOptions = MockStringOptions | MockNumberOptions | MockArrayOptions;
 
 interface MockOptions {
 	$$pre_type?: string;
 	$$reference?: number;
-	[key: string]: any;
+	[key: string]: CustomMockOptions | string | number | undefined;
 }
 
 class Mock {
@@ -60,7 +98,11 @@ class Mock {
 					if (ts.isPropertySignature(member)) {
 						const key = member.name.getText();
 						option.$$pre_type = name;
-						const value = this.generateByType(member.type, { ...option });
+						let value = null;
+						if (option[key] && typeof option[key] === 'object') {
+							const custom = option[key] as CustomMockOptions;
+							value = this.generateCustom(member.type, custom);
+						} else value = this.generateByType(member.type, { ...option });
 						obj[key] = value;
 					}
 				});
@@ -70,7 +112,7 @@ class Mock {
 				const enumMenber = enumDeclaration.members[randomNum(0, enumDeclaration.members.length - 1)];
 				let value = enumMenber.name.getText();
 				value = enumMenber.initializer?.getText() || value;
-				return value;
+				return { value };
 			}
 			default:
 				return {};
@@ -81,17 +123,24 @@ class Mock {
 		if (!type) return null;
 		switch (type.kind) {
 			case ts.SyntaxKind.StringKeyword:
-				return generate_string(5, 10);
+				return this.generateString({ type: 'string' });
 			case ts.SyntaxKind.NumberKeyword:
-				return randomNum(5, 10);
+				return this.generateNumber({ type: Math.random() >= 0.5 ? 'number' : 'number_float' });
 			case ts.SyntaxKind.TypeReference:
 				return this.generateReference(type as ts.TypeReferenceNode, { ...option });
+			case ts.SyntaxKind.ArrayType:
+				const array: any[] = [];
+				this.execCount(
+					() => array.push(this.generateByType((type as ts.ArrayTypeNode).elementType, { ...option })),
+					10
+				);
+				return array;
 			default:
 				return null;
 		}
 	}
 
-	private generateByType(type?: ts.TypeNode, option: MockOptions = {}) {
+	private generateByType(type?: ts.TypeNode, option: MockOptions = {}): any {
 		if (!type) return null;
 		if (option.$$reference && option.$$reference >= MAX_REFERENCE) return;
 		if (type.getText() === option.$$pre_type) option.$$reference = option.$$reference ? option.$$reference + 1 : 1;
@@ -116,14 +165,10 @@ class Mock {
 						map.set(enumValue, this.generateByType(type.typeArguments?.[1], { ...option }));
 					});
 				} else {
-					this.execCount(
-						() =>
-							map.set(
-								this.generateByType(type.typeArguments?.[0], { ...option }),
-								this.generateByType(type.typeArguments?.[1], { ...option })
-							),
-						10
-					);
+					this.execCount(() => {
+						const obj = this.generateByType(type.typeArguments?.[0], { ...option });
+						map.set(obj.value || obj, this.generateByType(type.typeArguments?.[1], { ...option }));
+					}, 10);
 				}
 
 				return map;
@@ -134,6 +179,51 @@ class Mock {
 				return set;
 			}
 		}
+	}
+
+	private generateCustom(type?: ts.TypeNode, option: CustomMockOptions = { type: 'string' }) {
+		if (!type) return null;
+		switch (option.type) {
+			case 'string':
+				return this.generateString(option);
+			case 'number':
+			case 'number_float':
+				return this.generateNumber(option);
+			case 'array':
+				return this.generateArray(type, option);
+			default:
+				break;
+		}
+	}
+
+	private generateString(option: MockStringOptions) {
+		const { min = BASIC_MIN_STRING, max = BASIC_MAX_STRING, language } = option;
+		switch (language) {
+			case 'en':
+				return generate_en(min, max);
+			case 'zh':
+				return generate_cn(min, max);
+			default:
+				return generate_string(min, max);
+		}
+	}
+
+	private generateNumber(option: MockNumberOptions) {
+		const { min = BASIC_MIN_NUMBER, max = BASIC_MAX_NUMBER, fixed = BASIC_FIXED, type } = option;
+		switch (type) {
+			case 'number':
+				return randomNum(min, max);
+			case 'number_float':
+				return randomFloatNum(min, max, fixed);
+		}
+	}
+
+	private generateArray(type: ts.TypeNode, option: MockArrayOptions) {
+		const arrayNode = type as ts.ArrayTypeNode;
+		const { length } = option;
+		const array: any[] = [];
+		this.execCount(() => array.push(this.generateByType(arrayNode.elementType, {})), length);
+		return array;
 	}
 
 	private execCount(callback: () => void, count: number) {
