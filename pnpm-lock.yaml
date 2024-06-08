@@ -42,6 +42,35 @@ importers:
       vite-plugin-dts: 3.9.1_cefd3cwmz66kqrognmapqnuzba
       vitest: 1.6.0
 
+  examples/hooks:
+    specifiers:
+      '@types/react': ^18.2.66
+      '@types/react-dom': ^18.2.22
+      '@typescript-eslint/eslint-plugin': ^7.2.0
+      '@typescript-eslint/parser': ^7.2.0
+      '@vitejs/plugin-react-swc': ^3.5.0
+      eslint: ^8.57.0
+      eslint-plugin-react-hooks: ^4.6.0
+      eslint-plugin-react-refresh: ^0.4.6
+      react: ^18.2.0
+      react-dom: ^18.2.0
+      typescript: ^5.2.2
+      vite: ^5.2.0
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1_react@18.3.1
+    devDependencies:
+      '@types/react': 18.3.3
+      '@types/react-dom': 18.3.0
+      '@typescript-eslint/eslint-plugin': 7.12.0_zetigct7vzwypy2zr4tya5bmxa
+      '@typescript-eslint/parser': 7.12.0_te743w6atip6hhlha3uq43n2xe
+      '@vitejs/plugin-react-swc': 3.7.0_vite@5.2.12
+      eslint: 8.57.0
+      eslint-plugin-react-hooks: 4.6.2_eslint@8.57.0
+      eslint-plugin-react-refresh: 0.4.7_eslint@8.57.0
+      typescript: 5.4.5
+      vite: 5.2.12
+
   examples/mock:
     specifiers:
       '@rr-utils/config': workspace:*
@@ -136,6 +165,9 @@ importers:
     devDependencies:
       '@types/node': 20.14.2
       '@types/prettier': 3.0.0
+
+  packages/hooks:
+    specifiers: {}
 
   packages/mock:
     specifiers:
