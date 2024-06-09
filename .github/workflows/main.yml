@@ -18,6 +18,7 @@ jobs:
       - name: Install and Build # 下载依赖 打包项目
         run: |
           npm install pnpm@7 -g
+          pnpm build
           cd web-site
           pnpm install
           pnpm run build
