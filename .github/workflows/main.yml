@@ -5,7 +5,7 @@ on: # 监听 main 分支上的 push 事件
       - main
 # 环境变量，构建时会注入 process.env.DEPLOYMENT_ENV，因为后续同时会部署在vercel上，通过这个环境变量区分 vercel 环境和 github action 环境
 env:
-  DEPLOYMENT_ENV: 'chovrio.github.io'
+  DEPLOYMENT_ENV: "chovrio.github.io"
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest # 构建环境使用 ubuntu
@@ -27,7 +27,7 @@ jobs:
         with: # 自定义环境变量
           token: ${{ secrets.DEPLOY_KEY }} # DEPLOY_KEY 是我的 secret 名称，需要替换成你的
           branch: main
-          folder: build
+          folder: web-site/build
           repository-name: chovrio/chovrio.github.io # 这是我的 github page 仓库
           target-folder: rr-utils # 打包的文件将放到GitHub Pages的docusaurus-demo 目录下
 
