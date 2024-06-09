@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Mock } from '../lib';
+import { Mock } from '../src';
 
 describe('Mock', () => {
 	const mock = new Mock(`
