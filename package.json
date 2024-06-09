@@ -16,6 +16,7 @@
 		"commit": "git-cz",
 		"prepare": "husky",
 		"build": "pnpm -r --filter='./packages/*' run build",
+		"build:mock": "pnpm -r --filter='./packages/mock' run build",
 		"test": "vitest run",
 		"prettier": "prettier --write ."
 	},
