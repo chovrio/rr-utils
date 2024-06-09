@@ -2,16 +2,31 @@ import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
+let favicon, baseUrl;
+if (process.env.NODE_ENV === 'development') {
+	favicon = 'img/favicon.ico';
+	baseUrl = '/';
+} else {
+	if (process.env.DEPLOYMENT_ENV === 'chovrio.github.io') {
+		favicon = '/img/favicon.ico';
+		// 这个地方的 url 必须和yml文件里面的目录一样
+		baseUrl = 'docusaurus-demo';
+	} else {
+		favicon = 'img/favicon.ico';
+		baseUrl = '/';
+	}
+}
+
 const config: Config = {
 	title: 'rr-utils',
 	tagline: '工具库使用文档',
-	favicon: 'img/favicon.ico',
+	favicon,
 
 	// Set the production url of your site here
 	url: 'https://your-docusaurus-site.example.com',
 	// Set the /<baseUrl>/ pathname under which your site is served
 	// For GitHub pages deployment, it is often '/<projectName>/'
-	baseUrl: '/',
+	baseUrl,
 
 	// GitHub pages deployment config.
 	// If you aren't using GitHub pages, you don't need these.
