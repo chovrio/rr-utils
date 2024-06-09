@@ -2,15 +2,12 @@ import React from 'react';
 import Layout from '@theme/Layout';
 import styles from './index.module.css';
 import Mock from '@rr-utils/mock';
-import MonacoEditor, { OnMount, loader } from '@monaco-editor/react';
+import MonacoEditor, { OnMount } from '@monaco-editor/react';
 
 export default function () {
 	const [code, setCode] = React.useState(`interface User {\n	name: string;\n	age: number;\n}`);
 	const [json, setJson] = React.useState(JSON.stringify({ name: 'maeNx', age: 54106.47 }));
 	const [name, setName] = React.useState('User');
-	React.useEffect(() => {
-		loader.config({ paths: { vs: 'https://cdn.bootcdn.net/ajax/libs/monaco-editor/0.49.0/min/vs' } });
-	}, []);
 	const handleEditorMount: OnMount = (editor, monaco) => {
 		if (!monaco.languages.typescript) return;
 		monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
