@@ -9,7 +9,7 @@ sidebar_position: 1
 ## 使用
 
 ```ts
-import { Mock } from '@rr-utils/mock';
+import { Mock } from "@rr-utils/mock";
 
 // 示`例 TypeScript 代码
 const sourceCode = `
@@ -48,23 +48,23 @@ enum Test {
 
 const mock = new Mock(sourceCode);
 
-const data = mock.generate('Obj', {
-	name: {
-		type: 'string',
-		min: 1,
-		max: 2,
-		language: 'en'
-	},
-	age: {
-		type: 'number_float',
-		min: 0,
-		max: 1,
-		fixed: 3
-	},
-	users: {
-		type: 'array',
-		length: 1
-	}
+const data = mock.generate("Obj", {
+  name: {
+    type: "string",
+    min: 1,
+    max: 2,
+    language: "en",
+  },
+  age: {
+    type: "number_float",
+    min: 0,
+    max: 1,
+    fixed: 3,
+  },
+  users: {
+    type: "array",
+    length: 1,
+  },
 });
 
 console.log(data);

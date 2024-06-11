@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2 # 动作用于设置 Node.js 环境
         with:
-          node-version: '16' # 指定 Node.js 版本
+          node-version: "16" # 指定 Node.js 版本
 
       - name: Install pnpm
         run: npm install -g pnpm@7 # 全局安装 pnpm

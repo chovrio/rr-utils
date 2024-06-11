@@ -1,29 +1,31 @@
 {
-	"name": "@rr-utils/vite-plugin-mock",
-	"version": "1.0.0",
-	"description": "",
-	"main": "lib/index.js",
-	"types": "lib/index.d.ts",
-	"scripts": {
-		"build": "tsc -p ./tsconfig.build.json",
-		"test": "vitest run"
-	},
-	"publishConfig": {
-		"access": "public"
-	},
-	"files": ["lib"],
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"devDependencies": {
-		"@rr-utils/config": "workspace:*",
-		"@rr-utils/mock": "workspace:*",
-		"@types/node": "^20.14.0",
-		"typescript": "^5.4.5"
-	},
-	"dependencies": {
-		"@fastify/cors": "^9.0.1",
-		"fastify": "^4.27.0",
-		"vite": "^5.2.12"
-	}
+  "name": "@rr-utils/vite-plugin-mock",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "test": "vitest run"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@rr-utils/config": "workspace:*",
+    "@rr-utils/mock": "workspace:*",
+    "@types/node": "^20.14.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@fastify/cors": "^9.0.1",
+    "fastify": "^4.27.0",
+    "vite": "^5.2.12"
+  }
 }

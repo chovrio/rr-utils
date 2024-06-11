@@ -2,7 +2,7 @@
 export {};
 
 declare global {
-	interface Window {
-		monitor_debug?: boolean;
-	}
+  interface Window {
+    monitor_debug?: boolean;
+  }
 }
