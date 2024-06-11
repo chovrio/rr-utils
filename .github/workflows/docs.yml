@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: document
 on: # 监听 main 分支上的 push 事件
   push:
     branches:
