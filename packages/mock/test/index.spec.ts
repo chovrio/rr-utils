@@ -38,7 +38,6 @@ describe('Mock', () => {
 			}
 		});
 
-		console.log(result);
 
 		expect(result).toHaveProperty('name');
 		expect(result).toHaveProperty('age');
