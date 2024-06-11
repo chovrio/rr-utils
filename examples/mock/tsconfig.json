@@ -1,8 +1,8 @@
 {
-  "extends": "@rr-utils/config/tsconfig",
-  "compilerOptions": {
-    "rootDir": ".",
-    "lib": ["DOM", "ESNext"]
-  },
-  "include": ["**/*.ts"]
+	"extends": "@rr-utils/config/tsconfig",
+	"compilerOptions": {
+		"rootDir": ".",
+		"lib": ["DOM", "ESNext"]
+	},
+	"include": ["**/*.ts"]
 }

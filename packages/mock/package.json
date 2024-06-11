@@ -1,27 +1,25 @@
 {
-  "name": "@rr-utils/mock",
-  "version": "1.0.0",
-  "description": "",
-  "keywords": [],
-  "license": "MIT",
-  "author": "",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "publishConfig": {
-    "access": "public"
-  },
-  "files": [
-    "lib"
-  ],
-  "scripts": {
-    "build": "tsc -p ./tsconfig.build.json",
-    "test": "vitest run"
-  },
-  "dependencies": {
-    "@rr-utils/config": "workspace:*"
-  },
-  "devDependencies": {
-    "@types/node": "^20.14.0",
-    "typescript": "^5.4.5"
-  }
+	"name": "@rr-utils/mock",
+	"version": "1.0.0",
+	"description": "",
+	"keywords": [],
+	"license": "MIT",
+	"author": "",
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
+	"publishConfig": {
+		"access": "public"
+	},
+	"files": ["lib"],
+	"scripts": {
+		"build": "tsc -p ./tsconfig.build.json",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@rr-utils/config": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/node": "^20.14.0",
+		"typescript": "^5.4.5"
+	}
 }

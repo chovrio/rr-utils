@@ -1,4 +1,4 @@
-import { Monitor } from "./monitor";
+import { Monitor } from './monitor';
 
 export { Monitor };
 

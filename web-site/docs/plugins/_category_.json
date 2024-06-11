@@ -1,8 +1,8 @@
 {
-  "label": "plugins",
-  "position": 4,
-  "link": {
-    "type": "generated-index",
-    "description": "插件包集合"
-  }
+	"label": "plugins",
+	"position": 4,
+	"link": {
+		"type": "generated-index",
+		"description": "插件包集合"
+	}
 }

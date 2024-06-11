@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
-import { Mock } from "../src";
+import { describe, expect, it } from 'vitest';
+import { Mock } from '../src';
 
-describe("Mock", () => {
-  const mock = new Mock(`
+describe('Mock', () => {
+	const mock = new Mock(`
     interface People {
       name: string;
       age: number;
@@ -28,50 +28,50 @@ describe("Mock", () => {
     }
   `);
 
-  it("mock basic type", () => {
-    const result = mock.generate("People", {
-      name: {
-        type: "string",
-        min: 1,
-        max: 2,
-        language: "en",
-      },
-    });
+	it('mock basic type', () => {
+		const result = mock.generate('People', {
+			name: {
+				type: 'string',
+				min: 1,
+				max: 2,
+				language: 'en'
+			}
+		});
 
-    expect(result).toHaveProperty("name");
-    expect(result).toHaveProperty("age");
+		expect(result).toHaveProperty('name');
+		expect(result).toHaveProperty('age');
 
-    expect(typeof result.name).toBe("string");
-    expect(typeof result.age).toBe("number");
-  });
+		expect(typeof result.name).toBe('string');
+		expect(typeof result.age).toBe('number');
+	});
 
-  it("mock reference type", () => {
-    const result = mock.generate("User");
+	it('mock reference type', () => {
+		const result = mock.generate('User');
 
-    expect(result).toHaveProperty("name");
-    expect(result).toHaveProperty("age");
-    expect(result).toHaveProperty("address");
-    expect(result).toHaveProperty("spouse");
+		expect(result).toHaveProperty('name');
+		expect(result).toHaveProperty('age');
+		expect(result).toHaveProperty('address');
+		expect(result).toHaveProperty('spouse');
 
-    expect(typeof result.name).toBe("string");
-    expect(typeof result.age).toBe("number");
-    expect(typeof result.address).toBe("string");
-    expect(typeof result.spouse).toBe("object");
+		expect(typeof result.name).toBe('string');
+		expect(typeof result.age).toBe('number');
+		expect(typeof result.address).toBe('string');
+		expect(typeof result.spouse).toBe('object');
 
-    expect(typeof result.spouse.spouse.name).toBe("string");
-    expect(typeof result.spouse.spouse.age).toBe("number");
-    expect(typeof result.spouse.spouse.address).toBe("string");
-  });
+		expect(typeof result.spouse.spouse.name).toBe('string');
+		expect(typeof result.spouse.spouse.age).toBe('number');
+		expect(typeof result.spouse.spouse.address).toBe('string');
+	});
 
-  it("mock list", () => {
-    const result = mock.generate("ResponseUserList");
+	it('mock list', () => {
+		const result = mock.generate('ResponseUserList');
 
-    expect(result).toHaveProperty("code");
-    expect(result).toHaveProperty("message");
-    expect(result).toHaveProperty("data");
+		expect(result).toHaveProperty('code');
+		expect(result).toHaveProperty('message');
+		expect(result).toHaveProperty('data');
 
-    expect(typeof result.code).toBe("number");
-    expect(typeof result.message).toBe("string");
-    expect(Array.isArray(result.data)).toBe(true);
-  });
+		expect(typeof result.code).toBe('number');
+		expect(typeof result.message).toBe('string');
+		expect(Array.isArray(result.data)).toBe(true);
+	});
 });

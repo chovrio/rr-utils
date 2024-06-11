@@ -1,10 +1,10 @@
 {
-  "extends": "@rr-utils/config/tsconfig",
-  "compilerOptions": {
-    "lib": ["ES2020", "DOM"],
-    "outDir": "lib",
-    "target": "ES2020"
-  },
-  "exclude": ["**/node_modules/**"],
-  "include": ["src/**/*"]
+	"extends": "@rr-utils/config/tsconfig",
+	"compilerOptions": {
+		"lib": ["ES2020", "DOM"],
+		"outDir": "lib",
+		"target": "ES2020"
+	},
+	"exclude": ["**/node_modules/**"],
+	"include": ["src/**/*"]
 }
