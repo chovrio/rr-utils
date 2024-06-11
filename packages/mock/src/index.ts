@@ -135,6 +135,8 @@ class Mock {
 					10
 				);
 				return array;
+			case ts.SyntaxKind.BooleanKeyword:
+				return Math.random() > 0.5 ? true : false;
 			default:
 				return null;
 		}
