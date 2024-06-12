@@ -12,7 +12,7 @@ import {
 
 type Node = ts.InterfaceDeclaration | ts.TypeAliasDeclaration | ts.EnumDeclaration | ts.ModuleDeclaration;
 
-type MockType = 'string' | 'number' | 'number_float' | 'array' | 'object';
+type MockType = 'string' | 'number' | 'number_float' | 'array' | 'object' | 'boolean';
 
 interface MockBasicOptions<T = any> {
 	type: MockType;
@@ -41,7 +41,12 @@ interface MockArrayOptions extends MockBasicOptions {
 	length: number;
 }
 
-type CustomMockOptions = MockStringOptions | MockNumberOptions | MockArrayOptions;
+interface MockBooleanOptions extends MockBasicOptions {
+	type: 'boolean';
+	value?: any | ((origin: boolean) => any);
+}
+
+type CustomMockOptions = MockStringOptions | MockNumberOptions | MockArrayOptions | MockBooleanOptions;
 
 interface MockOptions {
 	$$pre_type?: string;
@@ -145,7 +150,7 @@ class Mock {
 				);
 				return array;
 			case ts.SyntaxKind.BooleanKeyword:
-				return Math.random() > 0.5 ? true : false;
+				return this.generateBoolean();
 			default:
 				return null;
 		}
@@ -213,6 +218,8 @@ class Mock {
 					return this.verify(option.value, this.generateReference(type as ts.TypeReferenceNode, {}, option.length));
 				}
 				return this.verify(option.value, this.generateArray(type, option));
+			case 'boolean':
+				return this.verify(option.value, this.generateBoolean());
 			default:
 				break;
 		}
@@ -238,6 +245,10 @@ class Mock {
 			case 'number_float':
 				return randomFloatNum(min, max, fixed);
 		}
+	}
+
+	private generateBoolean() {
+		return Math.random() > 0.5 ? true : false;
 	}
 
 	private generateArray(type: ts.TypeNode, option: MockArrayOptions) {

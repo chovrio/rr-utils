@@ -6,6 +6,7 @@ describe('Mock', () => {
     interface People {
       name: string;
       age: number;
+			isMan: boolean;
     }
 
     interface User {
@@ -40,9 +41,11 @@ describe('Mock', () => {
 
 		expect(result).toHaveProperty('name');
 		expect(result).toHaveProperty('age');
+		expect(result).toHaveProperty('isMan');
 
 		expect(typeof result.name).toBe('string');
 		expect(typeof result.age).toBe('number');
+		expect(typeof result.isMan).toBe('boolean');
 	});
 
 	it('mock reference type', () => {
