@@ -190,7 +190,7 @@ class MonitorElement {
 		if (lazy) {
 			this.startVisibleTimer(STATE_VISIBLE, this.config.duration!);
 		} else {
-			this.mark(STATE_INVISIBLE);
+			this.mark(STATE_VISIBLE);
 		}
 		return this.report;
 	}

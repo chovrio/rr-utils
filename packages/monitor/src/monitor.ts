@@ -310,7 +310,7 @@ export class Monitor {
 			// 页面加载完毕初始化
 			for (let i = 1; i <= 9; i++) {
 				const xElements = document.elementsFromPoint((window.innerWidth * i) / 10, window.innerHeight / 2);
-				let yElements = document.elementsFromPoint(window.innerWidth / 2, (window.innerHeight * i) / 10);
+				const yElements = document.elementsFromPoint(window.innerWidth / 2, (window.innerHeight * i) / 10);
 				isContainer(xElements[0]) && emptyPoints++;
 				// 中心点只计算一次
 				if (i !== 5) {
