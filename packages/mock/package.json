@@ -19,7 +19,9 @@
 		"@rr-utils/config": "workspace:*"
 	},
 	"devDependencies": {
-		"@types/node": "^20.14.0",
+		"@types/node": "^20.14.0"
+	},
+	"peerDependencies": {
 		"typescript": "^5.4.5"
 	}
 }

@@ -12,7 +12,7 @@ import {
 
 type Node = ts.InterfaceDeclaration | ts.TypeAliasDeclaration | ts.EnumDeclaration | ts.ModuleDeclaration;
 
-type MockType = 'string' | 'number' | 'number_float' | 'array' | 'object';
+type MockType = 'string' | 'number' | 'number_float' | 'array' | 'object' | 'boolean';
 
 interface MockBasicOptions<T = any> {
 	type: MockType;
@@ -41,7 +41,12 @@ interface MockArrayOptions extends MockBasicOptions {
 	length: number;
 }
 
-type CustomMockOptions = MockStringOptions | MockNumberOptions | MockArrayOptions;
+interface MockBooleanOptions extends MockBasicOptions {
+	type: 'boolean';
+	value?: any | ((origin: boolean) => any);
+}
+
+type CustomMockOptions = MockStringOptions | MockNumberOptions | MockArrayOptions | MockBooleanOptions;
 
 interface MockOptions {
 	$$pre_type?: string;
@@ -125,16 +130,27 @@ class Mock {
 			case ts.SyntaxKind.StringKeyword:
 				return this.generateString({ type: 'string' });
 			case ts.SyntaxKind.NumberKeyword:
-				return this.generateNumber({ type: Math.random() >= 0.5 ? 'number' : 'number_float' });
+				return this.generateNumber({
+					type: Math.random() >= 0.5 ? 'number' : 'number_float'
+				});
 			case ts.SyntaxKind.TypeReference:
-				return this.generateReference(type as ts.TypeReferenceNode, { ...option });
+				return this.generateReference(type as ts.TypeReferenceNode, {
+					...option
+				});
 			case ts.SyntaxKind.ArrayType:
 				const array: any[] = [];
 				this.execCount(
-					() => array.push(this.generateByType((type as ts.ArrayTypeNode).elementType, { ...option })),
+					() =>
+						array.push(
+							this.generateByType((type as ts.ArrayTypeNode).elementType, {
+								...option
+							})
+						),
 					10
 				);
 				return array;
+			case ts.SyntaxKind.BooleanKeyword:
+				return this.generateBoolean();
 			default:
 				return null;
 		}
@@ -167,7 +183,9 @@ class Mock {
 					});
 				} else {
 					this.execCount(() => {
-						const obj = this.generateByType(type.typeArguments?.[0], { ...option });
+						const obj = this.generateByType(type.typeArguments?.[0], {
+							...option
+						});
 						map.set(obj.value || obj, this.generateByType(type.typeArguments?.[1], { ...option }));
 					}, length);
 				}
@@ -200,6 +218,8 @@ class Mock {
 					return this.verify(option.value, this.generateReference(type as ts.TypeReferenceNode, {}, option.length));
 				}
 				return this.verify(option.value, this.generateArray(type, option));
+			case 'boolean':
+				return this.verify(option.value, this.generateBoolean());
 			default:
 				break;
 		}
@@ -225,6 +245,10 @@ class Mock {
 			case 'number_float':
 				return randomFloatNum(min, max, fixed);
 		}
+	}
+
+	private generateBoolean() {
+		return Math.random() > 0.5 ? true : false;
 	}
 
 	private generateArray(type: ts.TypeNode, option: MockArrayOptions) {

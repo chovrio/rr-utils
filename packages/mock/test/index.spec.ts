@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { Mock } from '../lib';
+import { Mock } from '../src';
 
 describe('Mock', () => {
 	const mock = new Mock(`
     interface People {
       name: string;
       age: number;
+			isMan: boolean;
     }
 
     interface User {
@@ -38,13 +39,13 @@ describe('Mock', () => {
 			}
 		});
 
-		console.log(result);
-
 		expect(result).toHaveProperty('name');
 		expect(result).toHaveProperty('age');
+		expect(result).toHaveProperty('isMan');
 
 		expect(typeof result.name).toBe('string');
 		expect(typeof result.age).toBe('number');
+		expect(typeof result.isMan).toBe('boolean');
 	});
 
 	it('mock reference type', () => {
