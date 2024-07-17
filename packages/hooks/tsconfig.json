@@ -1,0 +1,14 @@
+{
+	"extends": "@rr-utils/config/tsconfig",
+	"compilerOptions": {
+		"rootDir": "src",
+		"lib": ["ESNext", "DOM"],
+		"jsx": "react",
+		"module": "ESNext",
+		"moduleResolution": "Node10",
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true
+	},
+	"include": ["src/**/*.ts"],
+	"references": [{ "path": "./tsconfig.node.json" }]
+}

@@ -20,9 +20,7 @@
 	"scripts": {
 		"build": "tsc -p ./tsconfig.json"
 	},
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"dependencies": {
 		"lightningcss": "^1.24.1",
 		"minimist": "^1.2.8",

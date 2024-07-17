@@ -5,5 +5,8 @@ import { MockPlugin } from '@rr-utils/vite-plugin-mock';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [react(), MockPlugin(path.resolve(__dirname, './mock/index.ts'))]
+	plugins: [
+		react()
+		// MockPlugin(path.resolve(__dirname, './mock/index.ts'))
+	]
 });

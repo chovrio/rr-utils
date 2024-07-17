@@ -1,12 +1,21 @@
 {
-  "name": "hooks",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+	"name": "hooks",
+	"version": "1.0.0",
+	"description": "",
+	"type": "module",
+	"main": "index.js",
+	"scripts": {
+		"build": "vite build",
+		"test": "vitest run"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@rr-utils/config": "workspace:*",
+		"@types/react": "^18.2.66",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"typescript": "^5.5.3"
+	}
 }

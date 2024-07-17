@@ -1,5 +1,8 @@
 {
 	"extends": "@rr-utils/config/tsconfig",
 	"exclude": ["**/node_modules/**"],
-	"include": ["**/*"]
+	"include": ["**/*"],
+	"compilerOptions": {
+		"types": ["vitest/globals"]
+	}
 }

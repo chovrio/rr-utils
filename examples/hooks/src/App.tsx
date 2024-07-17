@@ -6,7 +6,6 @@ const reducer = (state: number = 1, action: any) => {
 	switch (action.type) {
 		case 'ADD':
 			return state + 1;
-
 		case 'DEL':
 			return state - 1;
 		default:
